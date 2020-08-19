@@ -1,22 +1,21 @@
 version: "3.2"
 
 volumes:
-  db_data: {}
+  mysql_data: {}
 
 services:
   mysql:
-    image: mysql:5.7
-    ports:
-      - "3306:3306"
+    image: mysql:8.0
     expose:
       - "3306"
+      - "33060"
     volumes:
-      - db_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: "password"
-      MYSQL_DATABASE: "puutdb"
-      MYSQL_USER: "myuser"
-      MYSQL_PASSWORD: "mypassword"
+      MYSQL_DATABASE: "maindb"
+      MYSQL_USER: "mainuser"
+      MYSQL_PASSWORD: "mainpass"
     restart: unless-stopped
 
   prometheus:
