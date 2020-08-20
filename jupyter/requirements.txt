@@ -1,0 +1,10 @@
+# Main
+#----------
+requests
+pandas
+
+# KafKa, Mysql, ORM
+# ------------------------------------------------------------------------------
+mysql-connector-python
+sqlalchemy
+kafka-python

@@ -4,6 +4,16 @@ volumes:
   mysql_data: {}
 
 services:
+  jupyter:
+    build:
+      context: .
+      dockerfile: ./jupyter/Dockerfile
+    ports:
+      - "5555:5555"
+    volumes:
+      - ./notebooks:/notebooks
+    restart: unless-stopped
+    command: sh /jupyter_run.sh
   mysql:
     image: mysql:8.0
     expose:
@@ -11,21 +21,13 @@ services:
       - "33060"
     volumes:
       - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: "password"
       MYSQL_DATABASE: "maindb"
       MYSQL_USER: "mainuser"
       MYSQL_PASSWORD: "mainpass"
     restart: unless-stopped
-
-  prometheus:
-    image: prom/prometheus:v2.8.1
-    container_name: prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-
   grafana:
     image: grafana/grafana:6.1.1
     container_name: grafana
@@ -37,25 +39,30 @@ services:
       - ./grafana/provisioning/:/etc/grafana/provisioning/
     links:
       - prometheus
-
-  kafka:
-    build:
-      context: .
-      dockerfile: ./kafka/Dockerfile
-    depends_on:
-      - zookeeper
-    links:
-      - zookeeper
+  prometheus:
+    image: prom/prometheus:v2.8.1
+    container_name: prometheus
     ports:
-      - "9092:9092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml
-
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  # kafka:
+  #   build:
+  #     context: .
+  #     dockerfile: ./kafka/Dockerfile
+  #   depends_on:
+  #     - zookeeper
+  #   links:
+  #     - zookeeper
+  #   ports:
+  #     - "9092:9092"
+  #   environment:
+  #     KAFKA_BROKER_ID: 1
+  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+  #     KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  #     KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml
   # kafka:
   #   build:
   #     context: .
@@ -71,15 +78,14 @@ services:
   #     KAFKA_ADVERTISED_PORT: 9092
   #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
   #     KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml
-
-  zookeeper:
-    image: confluentinc/cp-zookeeper:5.2.0
-    hostname: zookeeper
-    ports:
-      - "2181:2181"
-    expose:
-      - "2181"
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    restart: on-failure
+  # zookeeper:
+  #   image: confluentinc/cp-zookeeper:5.2.0
+  #   hostname: zookeeper
+  #   ports:
+  #     - "2181:2181"
+  #   expose:
+  #     - "2181"
+  #   environment:
+  #     ZOOKEEPER_CLIENT_PORT: 2181
+  #     ZOOKEEPER_TICK_TIME: 2000
+  #   restart: on-failure
