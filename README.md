@@ -25,3 +25,5 @@ password: password
 ![alt text](https://github.com/arezamoosavi/puiiter/blob/master/photo/gold_dash.jpeg?raw=true)
 
 ![alt text](https://github.com/arezamoosavi/puiiter/blob/master/photo/gold_us_dash.jpeg?raw=true)
+
+## [Medium](https://medium.com/@sdamoosavi/real-time-data-monitoring-with-grafana-2e9d0a51f55)
